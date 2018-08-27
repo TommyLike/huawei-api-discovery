@@ -1,0 +1,118 @@
+---
+swagger: "2.0"
+info:
+  title: "HuaweiCloud API Discovery Service"
+  description: "This is HuaweiCloud's API Discovery Service."
+  version: "1.0.0"
+  contact:
+    email: "tommylikehu@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "petstore.swagger.io"
+basePath: "/v1"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+tags:
+- name: "APIs"
+  description: "Service APIs available on HuaweiCloud"
+  externalDocs:
+    description: "Read more"
+    url: "https://www.huaweicloud.com/"
+schemes:
+- "https"
+- "http"
+paths:
+  /discovery/apis:
+    get:
+      tags:
+      - "apis"
+      summary: "List all available service APIs."
+      description: ""
+      operationId: "list_apis"
+      parameters:
+      - name: "service_name"
+        in: "query"
+        description: "Service name to filter by"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+            $ref: "#/definitions/ListItems"
+      x-swagger-router-controller: "api_discovery.controllers.v1.apis_controller"
+  /discovery/apis/{id}:
+    get:
+      tags:
+      - "apis"
+      summary: "Show API specifications for one specific service."
+      description: ""
+      operationId: "get_api"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of one specific service item. "
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+            $ref: "#/definitions/Item"
+        404:
+          description: "The service item is not found."
+      x-swagger-router-controller: "api_discovery.controllers.v1.apis_controller"
+definitions:
+  Item:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      title:
+        type: "string"
+      api_url:
+        type: "string"
+      description:
+        type: "string"
+      document_url:
+        type: "string"
+    xml:
+      name: "Item"
+    example:
+      id: "14C89215-D7F4-4451-90F6-762D6E9DBDFF"
+      name: "ecs"
+      description: "Create and manage your virtual machines."
+      title: "HuaweiCloud ECS API"
+      api_url: "https://www.googleapis.com/discovery/v1/apis/adsensehost/v4.1/rest"
+      document_url: "https://www.googleapis.com/discovery/v1/apis/adsensehost/v4.1/rest"
+  ListItems:
+    type: "object"
+    properties:
+      items:
+        type: "array"
+        items:
+          $ref: "#/definitions/Item"
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+    example:
+      code: 0
+      type: "type"
+      message: "message"
+externalDocs:
+  description: "Read more about HuaweiCloud."
+  url: "https://www.huaweicloud.com/"
