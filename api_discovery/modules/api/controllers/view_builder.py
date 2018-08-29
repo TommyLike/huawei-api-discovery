@@ -1,5 +1,6 @@
 import json
 
+
 def build_discovery_items(items):
     d_items = []
     for item in items:

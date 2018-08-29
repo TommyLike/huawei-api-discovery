@@ -1,21 +1,24 @@
 import os
 import time
 
-from api_discovery.database import mongodb_client
-from api_discovery.models.discovery_item import DiscoveryItem
+from api_discovery.modules.database import mongo_client
+from api_discovery.modules.task import base
+from api_discovery.modules.objects import oas_v2
 
 
-class FileTask(object):
+class FolderTask(base.BaseTask):
 
-    def __init__(self, app, folder, interval):
-        self.yaml_folder = folder
+    REQUIRED_OPTIONS = ['SAMPLE_FOLDER', 'SCAN_INTERVAL']
+
+    def __init__(self, app, *args, **kwargs):
+        self.yaml_folder = app.config['SAMPLE_FOLDER']
         self.app = app
-        self.interval = interval
-        self.client = mongodb_client.MongoClient.get_instance(app)
+        self.interval = app.config['SCAN_INTERVAL']
+        self.client = mongo_client.MongoClient.get_instance()
 
     def get_all_files(self):
-        return [DiscoveryItem.from_dict(item) for item in
-                self.client.get_all_discovery_items()]
+        return [oas_v2.OASV2.from_dict(item) for
+                item in self.client.get_all_discovery_items()]
 
     def update_file(self, item):
         self.app.logger.info("going to update discovery item into "
@@ -46,7 +49,7 @@ class FileTask(object):
                 selected_item = next((x for x in items if x.name == name),
                                      None)
                 if selected_item is None:
-                    self.add_new_file(DiscoveryItem(file_name=file_name))
+                    self.add_new_file(oas_v2.OASV2(file_name=file_name))
                     continue
                 current_m_time = os.path.getmtime(file_name)
                 if str(current_m_time) != selected_item.m_time:
@@ -66,3 +69,6 @@ class FileTask(object):
                 time.sleep(self.interval)
         except Exception as e:
             self.app.logger.error("Failed to execute periodic task: %s" % e)
+
+    def start(self):
+        self.loop_scan()
