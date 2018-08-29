@@ -1,15 +1,15 @@
-import fcntl
 import os
+import fcntl
 import yaml
 import json
 from flask import current_app
 
-from api_discovery.models import base_model_
+from api_discovery.modules.objects import base
 
 
-class DiscoveryItem(base_model_.Model):
+class OASV2(base.Model):
 
-    swagger_types = {
+    attribute_types = {
         'name': str,
         'title': str,
         'version': str,
@@ -18,6 +18,7 @@ class DiscoveryItem(base_model_.Model):
         'schema': str,
         'm_time': str
     }
+
     attribute_map = {
         'name': 'name',
         'title': 'title',

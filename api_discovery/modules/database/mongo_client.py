@@ -1,6 +1,5 @@
 import pymongo
 from bson.objectid import ObjectId
-from flask import current_app
 
 
 class MongoClient(object):
@@ -10,13 +9,14 @@ class MongoClient(object):
     _Instance = None
 
     @classmethod
-    def get_instance(cls, app=None):
+    def initialize_client(cls, app):
+        MongoClient._Instance = MongoClient(app)
+
+    @classmethod
+    def get_instance(cls):
         if MongoClient._Instance:
             return MongoClient._Instance
-        if app is None:
-            app = current_app
-        MongoClient._Instance = MongoClient(app)
-        return MongoClient._Instance
+        raise Exception("Mongoclient uninitialized.")
 
     def __init__(self, app):
         try:
