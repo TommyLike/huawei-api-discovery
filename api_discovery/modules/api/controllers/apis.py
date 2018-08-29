@@ -1,12 +1,16 @@
 """Entrypoint of the main API Resources."""
 # Flask based imports
 from flask_restplus import Namespace
+from flask_restplus import reqparse
+from werkzeug.exceptions import NotFound, BadRequest
 from flask import Response
 import yaml
 import json
+import bson
+
 from api_discovery.modules.api.controllers import view_builder
 from api_discovery.modules.api.controllers import base
-from flask_restplus import reqparse
+from api_discovery.modules.objects import oas_v2
 
 # Empty name is required to have the desired url path
 api = Namespace(name='schemas', description='All Service schemas.')
@@ -24,7 +28,8 @@ class SchemaCollection(base.BasicResouce):
         parser.add_argument('name', type=str, help='service_name')
         args = parser.parse_args()
         self.logger.info("Get all schemas....")
-        items = self.db_client.get_all_discovery_items(name=args['name'])
+        items = oas_v2.OASV2List.get_all_filtered(
+            filter={'name': args['name']} if args['name'] else None)
         return view_builder.build_discovery_items(items)
 
 
@@ -34,10 +39,16 @@ class SchemaCollection(base.BasicResouce):
 class Schema(base.BasicResouce):
     """Get single service schema."""
 
-    @api.doc(responses={200: 'OK', 403: 'Unauthorized'})
+    @api.doc(responses={200: 'OK',
+                        400: 'Parameter is invalid',
+                        404: 'Resource not found.'})
     def get(self, id):
         """Get one specific service schema."""
-        item = self.db_client.get_discovery_item_by_id(id)
+        if not bson.objectid.ObjectId.is_valid(id):
+            raise BadRequest("Specified parameter is invalid.")
+        item = oas_v2.OASV2.get_by_id(id)
+        if item is None:
+            return NotFound()
         return view_builder.build_discovery_item(item)
 
 
@@ -47,9 +58,15 @@ class Schema(base.BasicResouce):
 class Schema(base.BasicResouce):
     """Get single service raw schema."""
 
-    @api.doc(responses={200: 'OK', 403: 'Unauthorized'})
+    @api.doc(responses={200: 'OK',
+                        400: 'Parameter is invalid',
+                        404: 'Resource not found'})
     def get(self, id):
         """Get raw schema of one specific service."""
-        item = self.db_client.get_discovery_item_by_id(id)
+        if not bson.objectid.ObjectId.is_valid(id):
+            raise BadRequest("Specified parameter is invalid.")
+        item = oas_v2.OASV2.get_by_id(id)
+        if item is None:
+            return NotFound()
         return Response(yaml.dump(json.loads(item['schema'])),
                         mimetype='application/x-yaml')

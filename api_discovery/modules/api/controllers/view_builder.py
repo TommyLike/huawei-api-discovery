@@ -10,14 +10,14 @@ def build_discovery_items(items):
             'description': item['description'],
             'id': str(item['_id'])
         })
-    return d_items
+    return {'schemas': d_items}
 
 
 def build_discovery_item(item):
-    return {
+    return {'schema': {
         'name': item['name'].split('.')[0],
         'title': item['title'],
         'description': item['description'],
         'id': str(item['_id']),
         'schema': json.loads(item['schema'])
-    }
+    }}

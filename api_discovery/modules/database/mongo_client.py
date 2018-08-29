@@ -30,24 +30,28 @@ class MongoClient(object):
             self.app.logger.error("Failed to initialize mongodb client.")
             raise
 
-    def insert_discovery_item(self, document):
-        self.collection.insert_one(document)
+    def object_create(self, item, collection):
+        return self.db[collection].insert_one(item)
 
-    def get_discovery_item(self, name):
-        return self.collection.find_one({'name': name})
+    def object_update(self, id, item, collection):
+        return self.db[collection].update_one({"_id": ObjectId(id)},
+                                              {"$set": item}, upsert=False)
 
-    def get_discovery_item_by_id(self, id):
-        return self.collection.find_one({"_id": ObjectId(id)})
+    def object_get(self, id, collection):
+        return self.db[collection].find_one({"_id": ObjectId(id)})
 
-    def get_all_discovery_items(self, name=None):
-        if name:
-            return self.collection.find({"name": {'$regex': "%s" % name}})
-        return self.collection.find()
+    def object_remove(self, id, collection):
+        return self.db[collection].remove({"_id": ObjectId(id)})
 
-    def remove_deleted_discovery_item(self, name):
-        self.collection.delete_one({'name': name})
+    def collection_get_all(self, collection):
+        return self.db[collection].find()
 
-    def update_discovery_item(self, name, update_item):
-        self.collection.update_one(
-            {'name': name},
-            {'$set': update_item}, upsert=True)
+    def collection_query(self, collection, filter):
+        return self.db[collection].find(filter)
+
+    def collection_regex_query(self, collection, filter):
+        db_query = {}
+        for key, value in filter.items():
+            db_query[key] = {'$regex': value}
+        return self.db[collection].find(db_query)
+

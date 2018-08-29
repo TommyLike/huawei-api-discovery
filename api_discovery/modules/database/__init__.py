@@ -8,5 +8,4 @@ class Database(object):
             self.init_app(app)
 
     def init_app(self, app):
-        # Register v1 blueprint
         mongo_client.MongoClient.initialize_client(app)

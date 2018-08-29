@@ -1,67 +1,80 @@
-import pprint
-
-import six
-import typing
-
-from api_discovery.modules.objects import util
-
-T = typing.TypeVar('T')
+from api_discovery.modules.database import mongo_client
 
 
-class Model(object):
-    attribute_types = {}
+class Model(dict):
 
-    # attributeMap: The key is attribute name and the
-    # value is json key in definition.
-    attribute_map = {}
+    __getattr__ = dict.get
+    __delattr__ = dict.__delitem__
+
+    required_attributes = []
+    collection = None
+
+    def __setattr__(self, key, value):
+        if key == '_client':
+            super(Model, self).__setattr__(key, value)
+        else:
+            super(Model, self).update({key: value})
+
+    @property
+    def id(self):
+        try:
+            return self['_id']
+        except:
+            return None
+
+    @id.setter
+    def id(self, value):
+        raise Exception("object's id attribute can't be set.")
+
+    def __init__(self, *args, **kwargs):
+        object_attributes = {}
+        for attribute in self.required_attributes:
+            object_attributes[attribute] = args[0].pop(attribute, None)
+        if args[0].get("_id", None):
+            object_attributes['_id'] = args[0].get("_id", None)
+        if kwargs:
+            raise Exception("Only %s attributes are allowed for %s object." % (
+                self.required_attributes, self.__class__))
+        self._client = mongo_client.MongoClient.get_instance()
+        super(Model, self).__init__(object_attributes, **kwargs)
+
+    def save(self):
+        if not self.id:
+            self._client.object_create(self, self.collection)
+        else:
+            self._client.object_update(self.id, self, self.collection)
+
+    def reload(self):
+        if self.id:
+            self.update(self._client.object_get(self.id, self.collection))
+
+    def remove(self):
+        if self.id:
+            self._client.object_remove(self.id, self.collection)
+            self.clear()
 
     @classmethod
-    def from_dict(cls: typing.Type[T], dikt) -> T:
-        """Returns the dict as a model"""
-        return util.deserialize_model(dikt, cls)
+    def get_by_id(cls, id):
+        client = mongo_client.MongoClient.get_instance()
+        ob = client.object_get(id, cls.collection)
+        if ob is None:
+            return None
+        return cls(ob)
 
-    def to_dict(self):
-        """Returns the model properties as a dict
 
-        :rtype: dict
-        """
-        result = {}
+class Collection(object):
 
-        for attr, _ in six.iteritems(self.attribute_types):
-            value = getattr(self, attr)
-            if isinstance(value, list):
-                result[attr] = list(map(
-                    lambda x: x.to_dict() if hasattr(x, "to_dict") else x,
-                    value
-                ))
-            elif hasattr(value, "to_dict"):
-                result[attr] = value.to_dict()
-            elif isinstance(value, dict):
-                result[attr] = dict(map(
-                    lambda item: (item[0], item[1].to_dict())
-                    if hasattr(item[1], "to_dict") else item,
-                    value.items()
-                ))
-            else:
-                result[attr] = value
+    model_class = None
 
-        return result
-
-    def to_str(self):
-        """Returns the string representation of the model
-
-        :rtype: str
-        """
-        return pprint.pformat(self.to_dict())
-
-    def __repr__(self):
-        """For `print` and `pprint`"""
-        return self.to_str()
-
-    def __eq__(self, other):
-        """Returns true if both objects are equal"""
-        return self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        """Returns true if both objects are not equal"""
-        return not self == other
+    @classmethod
+    def get_all_filtered(cls, filter=None):
+        print(filter)
+        client = mongo_client.MongoClient.get_instance()
+        if filter is None:
+            return [cls.model_class(item) for item in
+                    client.collection_get_all(
+                        cls.model_class.collection)]
+        else:
+            return [cls.model_class(item) for item in
+                    client.collection_regex_query(
+                        cls.model_class.collection, filter)]
