@@ -7,7 +7,7 @@ class TaskHub(object):
     This is a helper extension, which adjusts logging configuration for the
     application.
     """
-    Taskers = [FolderTask,]
+    Taskers = [FolderTask, ]
 
     def __init__(self, app=None, ):
         if app:

@@ -26,4 +26,3 @@ app = factory.set_flask()
 
 # Enable of the desired modules
 modules.init_app(app)
-
