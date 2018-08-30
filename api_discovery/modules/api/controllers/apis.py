@@ -48,7 +48,7 @@ class Schema(base.BasicResouce):
             raise BadRequest("Specified parameter is invalid.")
         item = oas_v2.OASV2.get_by_id(id)
         if item is None:
-            return NotFound()
+            raise NotFound()
         return view_builder.build_discovery_item(item)
 
 
@@ -67,6 +67,6 @@ class SchemaPayload(base.BasicResouce):
             raise BadRequest("Specified parameter is invalid.")
         item = oas_v2.OASV2.get_by_id(id)
         if item is None:
-            return NotFound()
+            raise NotFound()
         return Response(yaml.dump(json.loads(item['schema'])),
                         mimetype='application/x-yaml')
