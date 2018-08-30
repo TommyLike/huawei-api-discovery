@@ -19,7 +19,7 @@ class Model(dict):
     def id(self):
         try:
             return self['_id']
-        except:
+        except Exception:
             return None
 
     @id.setter

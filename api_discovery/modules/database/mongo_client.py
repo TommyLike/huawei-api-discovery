@@ -26,7 +26,7 @@ class MongoClient(object):
                 port=self.app.config['MONGO_PORT'])
             self.db = client[MongoClient.DB_NAME]
             self.collection = self.db[MongoClient.DB_COLLECTION]
-        except:
+        except Exception:
             self.app.logger.error("Failed to initialize mongodb client.")
             raise
 
@@ -54,4 +54,3 @@ class MongoClient(object):
         for key, value in filter.items():
             db_query[key] = {'$regex': value}
         return self.db[collection].find(db_query)
-

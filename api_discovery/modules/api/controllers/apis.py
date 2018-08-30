@@ -55,7 +55,7 @@ class Schema(base.BasicResouce):
 @api.route('/<id>/payload')
 @api.doc(params={'id': 'The id of service schema.'})
 @api.param('id', 'The id of service schema.')
-class Schema(base.BasicResouce):
+class SchemaPayload(base.BasicResouce):
     """Get single service raw schema."""
 
     @api.doc(responses={200: 'OK',
