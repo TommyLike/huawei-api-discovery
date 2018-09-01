@@ -4,6 +4,7 @@ from api_discovery.modules.objects import base
 class OASV2(base.Model):
 
     collection = 'discovery_items'
+    format = "OpenAPI V2"
 
     required_attributes = [
         'name',

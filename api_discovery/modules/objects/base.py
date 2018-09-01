@@ -8,6 +8,7 @@ class Model(dict):
 
     required_attributes = []
     collection = None
+    format = "Unknown"
 
     def __setattr__(self, key, value):
         if key == '_client':
@@ -32,6 +33,7 @@ class Model(dict):
             object_attributes[attribute] = args[0].pop(attribute, None)
         if args[0].get("_id", None):
             object_attributes['_id'] = args[0].get("_id", None)
+        object_attributes['format'] = self.format
         if kwargs:
             raise Exception("Only %s attributes are allowed for %s object." % (
                 self.required_attributes, self.__class__))

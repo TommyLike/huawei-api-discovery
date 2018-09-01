@@ -8,12 +8,16 @@ import yaml
 import json
 import bson
 
-from api_discovery.modules.api.controllers import view_builder
 from api_discovery.modules.api.controllers import base
 from api_discovery.modules.objects import oas_v2
+from api_discovery.modules.api.models import schemas
 
 # Empty name is required to have the desired url path
 api = Namespace(name='schemas', description='All Service schemas.')
+
+# Register models
+api.models[schemas.schema.name] = schemas.schema
+api.models[schemas.schema_detail.name] = schemas.schema_detail
 
 
 @api.route('/')
@@ -22,6 +26,7 @@ class SchemaCollection(base.BasicResouce):
 
     @api.doc(params={'name': 'The name of the service, default is None'},
              responses={200: 'OK', 403: 'Unauthorized'})
+    @api.marshal_with(api.models[schemas.schema.name], envelope="schemas")
     def get(self):
         """Get all service schemas."""
         parser = reqparse.RequestParser()
@@ -30,7 +35,7 @@ class SchemaCollection(base.BasicResouce):
         self.logger.info("Get all schemas....")
         items = oas_v2.OASV2List.get_all_filtered(
             filter={'name': args['name']} if args['name'] else None)
-        return view_builder.build_discovery_items(items)
+        return items
 
 
 @api.route('/<id>')
@@ -42,6 +47,8 @@ class Schema(base.BasicResouce):
     @api.doc(responses={200: 'OK',
                         400: 'Parameter is invalid',
                         404: 'Resource not found.'})
+    @api.marshal_with(api.models[schemas.schema_detail.name],
+                      envelope="schema")
     def get(self, id):
         """Get one specific service schema."""
         if not bson.objectid.ObjectId.is_valid(id):
@@ -49,7 +56,7 @@ class Schema(base.BasicResouce):
         item = oas_v2.OASV2.get_by_id(id)
         if item is None:
             raise NotFound()
-        return view_builder.build_discovery_item(item)
+        return item
 
 
 @api.route('/<id>/payload')
