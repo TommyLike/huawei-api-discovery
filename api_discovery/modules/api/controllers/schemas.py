@@ -2,7 +2,6 @@
 # Flask based imports
 from flask_restplus import Namespace
 from flask_restplus import reqparse
-from werkzeug.exceptions import NotFound, BadRequest
 from flask import Response
 import yaml
 import json
@@ -11,6 +10,7 @@ import bson
 from api_discovery.modules.api.controllers import base
 from api_discovery.modules.objects import oas_v2
 from api_discovery.modules.api.models import schemas
+from api_discovery.modules import exception
 
 # Empty name is required to have the desired url path
 api = Namespace(name='schemas', description='All Service schemas.')
@@ -25,14 +25,14 @@ class SchemaCollection(base.BasicResouce):
     """Schema resource class."""
 
     @api.doc(params={'name': 'The name of the service, default is None'},
-             responses={200: 'OK', 403: 'Unauthorized'})
+             responses={200: 'OK'})
     @api.marshal_with(api.models[schemas.schema.name], envelope="schemas")
     def get(self):
         """Get all service schemas."""
         parser = reqparse.RequestParser()
         parser.add_argument('name', type=str, help='service_name')
         args = parser.parse_args()
-        self.logger.info("Get all schemas....")
+        self.logger.info("Getting all schemas....")
         items = oas_v2.OASV2List.get_all_filtered(
             filter={'name': args['name']} if args['name'] else None)
         return items
@@ -52,10 +52,8 @@ class Schema(base.BasicResouce):
     def get(self, id):
         """Get one specific service schema."""
         if not bson.objectid.ObjectId.is_valid(id):
-            raise BadRequest("Specified parameter is invalid.")
+            raise exception.InvalidParameter(key="id")
         item = oas_v2.OASV2.get_by_id(id)
-        if item is None:
-            raise NotFound()
         return item
 
 
@@ -71,9 +69,7 @@ class SchemaPayload(base.BasicResouce):
     def get(self, id):
         """Get raw schema of one specific service."""
         if not bson.objectid.ObjectId.is_valid(id):
-            raise BadRequest("Specified parameter is invalid.")
+            raise exception.InvalidParameter(key="id")
         item = oas_v2.OASV2.get_by_id(id)
-        if item is None:
-            raise NotFound()
         return Response(yaml.dump(json.loads(item['schema'])),
                         mimetype='application/x-yaml')

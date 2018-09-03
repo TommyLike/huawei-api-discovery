@@ -9,7 +9,7 @@ class UpdateTime(fields.Raw):
         return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(value))
 
 
-class SchemaContent(fields.Raw):
+class JsonContent(fields.Raw):
     def format(self, value):
         return json.loads(value)
 
@@ -30,5 +30,5 @@ schema = Model('Schema', {
 })
 
 schema_detail = schema.clone('SchemaDetail', {
-    'schema': SchemaContent()
+    'schema': JsonContent()
 })

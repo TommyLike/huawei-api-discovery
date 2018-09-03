@@ -1,4 +1,5 @@
 from api_discovery.modules.database import mongo_client
+from api_discovery.modules import exception
 
 
 class Model(dict):
@@ -60,7 +61,7 @@ class Model(dict):
         client = mongo_client.MongoClient.get_instance()
         ob = client.object_get(id, cls.collection)
         if ob is None:
-            return None
+            raise exception.SchemaNotFound(schema=id)
         return cls(ob)
 
 
