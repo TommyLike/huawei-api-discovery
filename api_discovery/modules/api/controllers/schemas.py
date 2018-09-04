@@ -21,6 +21,7 @@ api.models[schemas.schema_detail.name] = schemas.schema_detail
 
 
 @api.route('/')
+@api.header('Access-Control-Allow-Origin', '*')
 class SchemaCollection(base.BasicResouce):
     """Schema resource class."""
 
@@ -35,12 +36,13 @@ class SchemaCollection(base.BasicResouce):
         self.logger.info("Getting all schemas....")
         items = oas_v2.OASV2List.get_all_filtered(
             filter={'name': args['name']} if args['name'] else None)
-        return items
+        return items, 200, {"Access-Control-Allow-Origin": "*"}
 
 
 @api.route('/<id>')
 @api.doc(params={'id': 'The id of service schema.'})
 @api.param('id', 'The id of service schema.')
+@api.header('Access-Control-Allow-Origin', '*')
 class Schema(base.BasicResouce):
     """Get single service schema."""
 
@@ -54,12 +56,13 @@ class Schema(base.BasicResouce):
         if not bson.objectid.ObjectId.is_valid(id):
             raise exception.InvalidParameter(key="id")
         item = oas_v2.OASV2.get_by_id(id)
-        return item
+        return item, 200, {"Access-Control-Allow-Origin": "*"}
 
 
 @api.route('/<id>/payload')
 @api.doc(params={'id': 'The id of service schema.'})
 @api.param('id', 'The id of service schema.')
+@api.header('Access-Control-Allow-Origin', '*')
 class SchemaPayload(base.BasicResouce):
     """Get single service raw schema."""
 
@@ -71,5 +74,8 @@ class SchemaPayload(base.BasicResouce):
         if not bson.objectid.ObjectId.is_valid(id):
             raise exception.InvalidParameter(key="id")
         item = oas_v2.OASV2.get_by_id(id)
-        return Response(yaml.dump(json.loads(item['schema'])),
-                        mimetype='text/yaml')
+        return Response(
+            response=yaml.dump(json.loads(item['schema'])),
+            status=200,
+            mimetype='text/yaml',
+            headers={"Access-Control-Allow-Origin": "*"})
