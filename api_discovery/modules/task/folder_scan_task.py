@@ -9,10 +9,10 @@ from api_discovery.modules.task import file_util
 
 class FolderTask(base.BaseTask):
 
-    REQUIRED_OPTIONS = ['SAMPLE_FOLDER', 'SCAN_INTERVAL']
+    REQUIRED_OPTIONS = ['SCHEMA_FOLDER', 'SCAN_INTERVAL']
 
     def __init__(self, app, *args, **kwargs):
-        self.yaml_folder = app.config['SAMPLE_FOLDER']
+        self.yaml_folder = app.config['SCHEMA_FOLDER']
         self.app = app
         self.interval = app.config['SCAN_INTERVAL']
         self.client = mongo_client.MongoClient.get_instance()

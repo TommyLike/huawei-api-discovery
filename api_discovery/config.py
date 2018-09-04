@@ -21,8 +21,9 @@ class Config(object):
 
     # Periodic task related config
     SCAN_INTERVAL = 1 * 60
-    SAMPLE_FOLDER = \
+    SCHEMA_FOLDER = \
         "/Users/tommylike/Desktop/huawei_api_discovery/api_discovery/samples"
+    HOST = "127.0.0.1:5000"
 
     ENABLE_TASKERS = 'FolderTask,'
 
@@ -57,7 +58,8 @@ class ProductionConfig(Config):
     MONGO_IP = env_host if env_host else "127.0.0.1"
     env_port = os.getenv("MONGO_PORT", default=None)
     MONGO_PORT = env_port if env_port else 27017
-    SAMPLE_FOLDER = "/etc/api_discovery/samples"
+    SCHEMA_FOLDER = "/etc/api_discovery/samples"
+    HOST = "159.138.29.201"
 
 
 config = {

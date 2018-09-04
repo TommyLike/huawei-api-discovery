@@ -9,13 +9,13 @@ import bson
 
 from api_discovery.modules.api.controllers import base
 from api_discovery.modules.objects import oas_v2
-from api_discovery.modules.api.models import schemas
+from api_discovery.modules.api.views import schemas
 from api_discovery.modules import exception
 
 # Empty name is required to have the desired url path
 api = Namespace(name='schemas', description='All Service schemas.')
 
-# Register models
+# Register views
 api.models[schemas.schema.name] = schemas.schema
 api.models[schemas.schema_detail.name] = schemas.schema_detail
 
@@ -72,4 +72,4 @@ class SchemaPayload(base.BasicResouce):
             raise exception.InvalidParameter(key="id")
         item = oas_v2.OASV2.get_by_id(id)
         return Response(yaml.dump(json.loads(item['schema'])),
-                        mimetype='application/x-yaml')
+                        mimetype='text/yaml')
