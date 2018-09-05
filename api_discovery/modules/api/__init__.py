@@ -12,4 +12,4 @@ class DiscoveryAPI(object):
         # Register v1 blueprint
         app.register_blueprint(blueprint)
         # Wrap v1 APIs with CORS
-        CORS(app)
+        CORS(app, resources={r"/discovery/v1/*": {"origins": "*"}})
