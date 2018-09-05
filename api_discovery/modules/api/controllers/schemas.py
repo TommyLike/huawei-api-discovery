@@ -36,7 +36,7 @@ class SchemaCollection(base.BasicResouce):
         self.logger.info("Getting all schemas....")
         items = oas_v2.OASV2List.get_all_filtered(
             filter={'name': args['name']} if args['name'] else None)
-        return items, 200, {"Access-Control-Allow-Origin": "*"}
+        return items
 
 
 @api.route('/<id>')
@@ -56,7 +56,7 @@ class Schema(base.BasicResouce):
         if not bson.objectid.ObjectId.is_valid(id):
             raise exception.InvalidParameter(key="id")
         item = oas_v2.OASV2.get_by_id(id)
-        return item, 200, {"Access-Control-Allow-Origin": "*"}
+        return item
 
 
 @api.route('/<id>/payload')
@@ -76,6 +76,4 @@ class SchemaPayload(base.BasicResouce):
         item = oas_v2.OASV2.get_by_id(id)
         return Response(
             response=yaml.dump(json.loads(item['schema'])),
-            status=200,
-            mimetype='text/yaml',
-            headers={"Access-Control-Allow-Origin": "*"})
+            mimetype='text/yaml')
