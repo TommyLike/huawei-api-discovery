@@ -3,3 +3,4 @@ flask-restplus
 pymongo
 PyYAML
 flask-CORS
+requests

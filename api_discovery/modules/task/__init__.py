@@ -1,5 +1,6 @@
 import threading
 from api_discovery.modules.task.folder_scan_task import FolderTask
+from api_discovery.modules.task.proxy_task import HuaweiCloudProxy
 
 
 class TaskHub(object):
@@ -14,6 +15,7 @@ class TaskHub(object):
             self.init_app(app)
 
     def init_app(self, app):
+        HuaweiCloudProxy.initialize_client(app)
         # Start the periodic task to scan folders
         for item in TaskHub.Taskers:
             if item.__name__ in app.config['ENABLE_TASKERS']:
