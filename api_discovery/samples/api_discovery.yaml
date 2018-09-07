@@ -1,0 +1,170 @@
+{
+  "responses": {
+    "ParseError": {
+      "description": "When a mask can't be parsed"
+    },
+    "MaskError": {
+      "description": "When any error occurs on mask"
+    }
+  },
+  "tags": [
+    {
+      "name": "schemas",
+      "description": "All Service schemas."
+    }
+  ],
+  "paths": {
+    "/schemas/": {
+      "get": {
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string",
+                "description": "*"
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get all service schemas",
+        "tags": [
+          "schemas"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "type": "string",
+            "description": "The name of the service, default is None"
+          },
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "operationId": "get_schema_collection"
+      }
+    },
+    "/schemas/{id}": {
+      "get": {
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string",
+                "description": "*"
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string",
+                "description": "*"
+              }
+            },
+            "description": "Parameter is invalid"
+          },
+          "404": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string",
+                "description": "*"
+              }
+            },
+            "description": "Resource not found."
+          }
+        },
+        "summary": "Get one specific service schema",
+        "tags": [
+          "schemas"
+        ],
+        "parameters": [
+          {
+            "name": "X-Fields",
+            "in": "header",
+            "type": "string",
+            "format": "mask",
+            "description": "An optional fields mask"
+          }
+        ],
+        "operationId": "get_schema"
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "type": "string",
+          "required": true,
+          "description": "The id of service schema."
+        }
+      ]
+    },
+    "/schemas/{id}/payload": {
+      "get": {
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string",
+                "description": "*"
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string",
+                "description": "*"
+              }
+            },
+            "description": "Parameter is invalid"
+          },
+          "404": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string",
+                "description": "*"
+              }
+            },
+            "description": "Resource not found"
+          }
+        },
+        "summary": "Get raw schema of one specific service",
+        "tags": [
+          "schemas"
+        ],
+        "operationId": "get_schema_payload"
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "type": "string",
+          "required": true,
+          "description": "The id of service schema."
+        }
+      ]
+    }
+  },
+  "produces": [
+    "application/json"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "basePath": "/discovery/v1",
+  "host": "159.138.29.201",
+  "info": {
+    "title": "Huawei Cloud API Discovery Service",
+    "version": "1.0",
+    "description": "This service is used to record all API schemas which are published on Huawei Cloud."
+  },
+  "swagger": "2.0"
+}
