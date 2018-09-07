@@ -28,9 +28,9 @@ class Config(object):
     ENABLE_TASKERS = 'FolderTask,'
 
     # Proxy task related config
-    USERNAME = 'wangkunpeng'
-    PASSWORD = 'OpenStackSDK123'
-    DOMAIN = 'wangkunpeng'
+    USERNAME = os.getenv("USERNAME", default=None)
+    PASSWORD = os.getenv("PASSWORD", default=None)
+    DOMAIN = os.getenv("DOMAIN", default=None)
 
 
 class DevelopmentConfig(Config):
