@@ -2,6 +2,7 @@ from flask import Blueprint
 from flask_restplus import Api
 
 from api_discovery.modules.api.controllers import schemas
+from api_discovery.modules.api.controllers import proxy
 from api_discovery.modules import exception
 
 blueprint = Blueprint('discovery', __name__, url_prefix='/discovery/v1')
@@ -21,3 +22,4 @@ def register_error(error):
 
 api.namespaces.clear()
 api.add_namespace(schemas.api)
+api.add_namespace(proxy.api)
