@@ -94,10 +94,11 @@ class HuaweiCloudProxy():
         result = http_method(url,
                              **parameters)
         self.app.logger.info("[Response Code]: %s" % result.status_code)
-        self.app.logger.info("[Response Content]: %s" % result.json())
+        self.app.logger.info("[Response Content]: %s" %
+                             None if len(result.text) == 0 else result.json())
         self.app.logger.info(
             "*************Ending to proxy request*************")
         return {
             'status_code': result.status_code,
-            'content': result.json()
+            'content': None if len(result.text) == 0 else result.json()
         }
