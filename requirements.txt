@@ -4,3 +4,7 @@ pymongo
 PyYAML
 flask-CORS
 requests
+pyopenssl
+ndg-httpsclient
+pyasn1
+
